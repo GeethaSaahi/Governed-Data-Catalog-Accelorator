@@ -1,15 +1,21 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "6"
+# ///
 # MAGIC %md
 # MAGIC # 06 - Lineage + governance KPIs
 # MAGIC Lineage is captured automatically by Unity Catalog. Also open **Catalog > fund_exposure > Lineage** to show the graph.
 # MAGIC System tables may need an admin to enable `system.access` and can lag by several minutes.
 
 # COMMAND ----------
+
 dbutils.widgets.text("catalog", "fin_gov_dev")
 catalog = dbutils.widgets.get("catalog")
 gov = f"{catalog}.governance"
 
 # COMMAND ----------
+
 try:
     display(spark.sql(f"""
       SELECT DISTINCT source_table_full_name, target_table_full_name
@@ -23,6 +29,7 @@ except Exception as e:
     print("System lineage tables not available yet - use the Lineage tab in Catalog Explorer.", str(e)[:150])
 
 # COMMAND ----------
+
 spark.sql(f"""
 CREATE OR REPLACE VIEW {gov}.v_governance_kpis AS
 SELECT

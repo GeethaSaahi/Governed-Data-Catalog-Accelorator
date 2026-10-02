@@ -1,9 +1,14 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "6"
+# ///
 # MAGIC %md
 # MAGIC # 01 - Catalog, schemas and synthetic asset-management data
 # MAGIC Creates `raw` (investors, accounts, fund_master, transactions), `curated` (fund_exposure) and `governance` schemas.
 
 # COMMAND ----------
+
 dbutils.widgets.text("catalog", "fin_gov_dev")
 catalog = dbutils.widgets.get("catalog")
 
@@ -13,6 +18,7 @@ for s in ["raw", "curated", "governance"]:
     spark.sql(f"CREATE SCHEMA IF NOT EXISTS {catalog}.{s}")
 
 # COMMAND ----------
+
 spark.sql(f"""
 CREATE OR REPLACE TABLE {catalog}.raw.investors AS
 SELECT concat('INV', lpad(cast(id AS STRING), 5, '0')) AS investor_id,
@@ -59,6 +65,7 @@ FROM range(1, 3001)
 """)
 
 # COMMAND ----------
+
 # A few column descriptions only - the rest stay undocumented on purpose (a governance KPI later)
 comments = {
     ("investors", "investor_id"): "Unique investor identifier",
@@ -71,6 +78,7 @@ for (t, c), text in comments.items():
     spark.sql(f"ALTER TABLE {catalog}.raw.{t} ALTER COLUMN {c} COMMENT '{text}'")
 
 # COMMAND ----------
+
 # Curated, PII-free gold table built from raw -> Unity Catalog captures lineage automatically
 spark.sql(f"""
 CREATE OR REPLACE TABLE {catalog}.curated.fund_exposure AS

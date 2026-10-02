@@ -1,12 +1,17 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "6"
+# ///
 # MAGIC %md
 # MAGIC # 03 - AI-assisted classification with TypeSafe Jev
 # MAGIC Jev returns typed answers with probabilities. Only column **metadata** is sent, never data values.
 # MAGIC Setup once (CLI): `databricks secrets create-scope gov` then `databricks secrets put-secret gov openrouter_key`
 
 # COMMAND ----------
+
 import os, sys, json
-sys.path.append(os.path.abspath(".."))
+sys.path.append(os.path.abspath("../src"))
 from concurrent.futures import ThreadPoolExecutor
 import pandas as pd
 from govjev.jev_client import decide, CLASSIFY_QUESTIONS
@@ -14,11 +19,13 @@ from govjev.policy import classification_status, mask_required
 
 dbutils.widgets.text("catalog", "fin_gov_dev")
 catalog = dbutils.widgets.get("catalog")
-api_key = dbutils.secrets.get("gov", "openrouter_key")
+dbutils.widgets.text("api_key", "")
+api_key = dbutils.widgets.get("api_key")
 
 inv = spark.table(f"{catalog}.governance.column_inventory").toPandas()
 
 # COMMAND ----------
+
 def classify(r):
     state = {
         "domain": "asset management: investors, accounts, funds, transactions",
