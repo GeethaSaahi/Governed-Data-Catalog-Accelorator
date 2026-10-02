@@ -1,0 +1,6 @@
+requester,role,table,duration_days,justification,dataset_sensitivity,jev_recommendation,jev_confidence,risk_score,final_action,model
+a.rao,BI analyst,fund_exposure,30,Monthly AUM dashboard for fund managers,confidential,approve,0.33,1.15,HUMAN_APPROVAL,typesafe/jev-1.13-20260917
+m.iyer,Marketing intern,investors,365,need data,restricted,escalate,0.8,1.98,HUMAN_APPROVAL,typesafe/jev-1.13-20260917
+s.khan,Compliance officer,investors,14,KYC audit sample for regulator review ticket 4411,restricted,escalate,0.43,1.43,HUMAN_APPROVAL,typesafe/jev-1.13-20260917
+p.nair,Data scientist,fund_master,90,"NAV forecasting research, approved by head of analytics",internal,approve,0.75,0.83,HUMAN_APPROVAL,typesafe/jev-1.13-20260917
+r.das,Contractor,transactions,180,migration testing,confidential,escalate,0.84,1.71,HUMAN_APPROVAL,typesafe/jev-1.13-20260917
