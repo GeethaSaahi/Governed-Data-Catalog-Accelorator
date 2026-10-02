@@ -1,0 +1,53 @@
+bundle:
+  name: uc-governance-jev
+
+variables:
+  catalog:
+    default: fin_gov_dev
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://<your-workspace-url>
+  prod:
+    variables:
+      catalog: fin_gov
+    workspace:
+      host: https://<your-workspace-url>
+
+resources:
+  jobs:
+    governance_pipeline:
+      name: uc-governance-jev-${bundle.target}
+      tasks:
+        - task_key: setup_data
+          notebook_task:
+            notebook_path: ./notebooks/01_setup_data.py
+            base_parameters: { catalog: "${var.catalog}" }
+        - task_key: harvest_metadata
+          depends_on: [{ task_key: setup_data }]
+          notebook_task:
+            notebook_path: ./notebooks/02_harvest_metadata.py
+            base_parameters: { catalog: "${var.catalog}" }
+        - task_key: jev_classify
+          depends_on: [{ task_key: harvest_metadata }]
+          notebook_task:
+            notebook_path: ./notebooks/03_jev_classify.py
+            base_parameters: { catalog: "${var.catalog}" }
+        - task_key: apply_controls
+          depends_on: [{ task_key: jev_classify }]
+          notebook_task:
+            notebook_path: ./notebooks/04_apply_tags_and_controls.py
+            base_parameters: { catalog: "${var.catalog}" }
+        - task_key: access_triage
+          depends_on: [{ task_key: apply_controls }]
+          notebook_task:
+            notebook_path: ./notebooks/05_access_request_triage.py
+            base_parameters: { catalog: "${var.catalog}" }
+        - task_key: lineage_kpis
+          depends_on: [{ task_key: access_triage }]
+          notebook_task:
+            notebook_path: ./notebooks/06_lineage_and_kpis.py
+            base_parameters: { catalog: "${var.catalog}" }
